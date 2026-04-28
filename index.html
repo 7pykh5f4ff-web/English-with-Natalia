@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English with Natalia - Репетитор английского языка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a2e;
+            --bg-secondary: #131340;
+            --accent: #7c3aed;
+            --accent-light: #a78bfa;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --card-bg: rgba(30, 30, 70, 0.6);
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(124, 58, 237, 0.2);
+            --success: #10b981;
+            --gradient: linear-gradient(135deg, #7c3aed, #6d28d9);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: float 8s ease-in-out infinite;
+        }
+        .bg-circle:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+        .bg-circle:nth-child(2) {
+            width: 350px;
+            height: 350px;
+            background: #8b5cf6;
+            bottom: -100px;
+            right: -100px;
+            animation-delay: 4s;
+        }
+        .bg-circle:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            background: #6366f1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.05); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(15px, 15px) scale(1.02); }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 46, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: var(--accent-light);
+        }
+
+        /* Sections */
+        section {
+            padding: 80px 0;
+        }
+
+        /* Hero */
+        #hero {
+            text-align: center;
+            padding: 100px 0 60px;
+        }
+        #hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        #hero .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        #hero .unp {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 36px;
+            background: var(--gradient);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent-light);
+            margin-left: 10px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+        .card h3 {
+            color: var(--accent-light);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        /* About */
+        #about .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        @media (max-width: 768px) {
+            #about .about-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .companies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .company-tag {
+            background: rgba(124, 58, 237, 0.2);
+            color: var(--accent-light);
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+        }
+
+        /* Services */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-light);
+            margin: 10px 0;
+        }
+        .price span {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .badge {
+            display: inline-block;
+            background: var(--success);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        /* Test Section */
+        #test {
+            background: var(--bg-secondary);
+            border-radius: 30px;
+            padding: 60px 30px;
+            margin: 0 -20px;
+        }
+        @media (max-width: 768px) {
+            #test {
+                margin: 0;
+                border-radius: 20px;
+                padding: 40px 20px;
+            }
+        }
+        .test-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .question-block {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .question-block.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 1rem;
+        }
+        .option-btn:hover {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.1);
+        }
+        .option-btn.selected {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.2);
+        }
+        .test-progress {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .test-progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 2px;
+            transition: width 0.5s;
+        }
+        .nav-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 10px;
+        }
+        .result-box {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .result-box.show {
+            display: block;
+            animation: fadeIn 0.7s ease;
+        }
+        .result-level {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--accent-light);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .form-group select {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        /* Materials */
+        .material-card {
+            text-align: center;
+            padding: 30px;
+            cursor: default;
+        }
+        .material-card.locked {
+            opacity: 0.5;
+            filter: grayscale(30%);
+        }
+        .material-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .lock-overlay {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal h3 {
+            margin-bottom: 15px;
+            color: var(--accent-light);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Анимированный фон -->
+    <div class="bg-animation">
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">English with Natalia</div>
+                <ul>
+                    <li><a href="#about">Обо мне</a></li>
+                    <li><a href="#services">Услуги</a></li>
+                    <li><a href="#test-section">Тест</a></li>
+                    <li><a href="#materials">Пособия</a></li>
+                    <li><a href="#contact">Запись</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section id="hero">
+        <div class="container">
+            <h1>Наталья</h1>
+            <p class="subtitle">Сертифицированный TEFL/TESOL преподаватель английского языка</p>
+            <p class="subtitle">Диплом по специализации «Учитель-переводчик»</p>
+            <p class="unp">ИП • УНП 491507999</p>
+            <a href="#test-section" class="btn">Пройти тест на уровень</a>
+            <a href="#contact" class="btn btn-outline">Записаться</a>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="card">
+                    <h3>👩‍🏫 Обо мне</h3>
+                    <p>Опыт работы <strong>более 5 лет</strong>. Работаю как с обычными группами, так и с корпоративными клиентами.</p>
+                    <p style="margin-top:10px;">Моя специализация — <strong>уровни A2–B2</strong>. Я не фокусируюсь на ошибках и подготовке к тестированию, а делаю акцент на <strong>расслабленное общение</strong> — как в обычной жизни, так и на бизнес-конференциях.</p>
+                    <div class="companies" style="margin-top:15px;">
+                        <span class="company-tag">Vizuteh System</span>
+                        <span class="company-tag">ACD Labs</span>
+                        <span class="company-tag">Мультипак</span>
+                        <span class="company-tag">Онлайнер</span>
+                        <span class="company-tag">Flo</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>🎯 Мой подход</h3>
+                    <p>✅ <strong>Коммуникативная методика</strong> — минимум скучных правил, максимум живой речи</p>
+                    <p>✅ Малые группы до 6 человек — каждому уделяется внимание</p>
+                    <p>✅ Онлайн-формат — занимайтесь из любого места</p>
+                    <p>✅ Расслабленная атмосфера — язык учится через интересные беседы</p>
+                    <p style="margin-top:15px;"><em>«Без сертификата об окончании» — моя цель научить вас говорить, а не готовить к экзаменам.</em></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services">
+        <div class="container">
+            <h2 style="text-align:center; margin-bottom:40px; font-size:2rem;">📋 Услуги и цены</h2>
+            <div class="services-grid">
+                <div class="card">
+                    <span class="badge">Популярный</span>
+                    <h3>👥 Группа / Пара</h3>
+                    <p>До 6 человек • Онлайн</p>
+                    <p>2 раза в неделю по 75 минут</p>
+                    <div class="price">215 BYN<span>/мес</span></div>
+                    <p style="font-size:0.9rem; color:var(--text-muted);">Улучшение коммуникативных навыков A2–B2</p>
+                </div>
+                <div class="card">
+                    <h3>👤 Индивидуально</h3>
+                    <p>Персональные занятия • Онлайн</p>
+                    <p>60 минут</p>
+                    <div class="price">50 BYN<span>/занятие</span></div>
+                    <p style="font-size:0.9rem; color:var(--text-muted);">Индивидуальный подход и максимум внимания</p>
+                </div>
+                <div class="card">
+                    <h3>🏢 Корпоративный</h3>
+                    <p>Для IT-компаний и бизнеса</p>
+                    <p>Английский для конференций и переговоров</p>
+                    <div class="price" style="font-size:1.3rem;">По договорённости</div>
+                    <p style="font-size:0.9rem; color:var(--text-muted);">Опыт с Vizuteh System, ACD Labs и другими</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Test Section -->
+    <section id="test-section">
+        <div class="container">
+            <div id="test">
+                <div class="test-container">
+                    <h2 style="text-align:center; margin-bottom:10px; font-size:2rem;">📝 Тест на уровень языка</h2>
+                    <p style="text-align:center; color:var(--text-muted); margin-bottom:30px;">Основан на критериях CEFR • 20 вопросов</p>
+                    <div class="test-progress"><div class="test-progress-bar" id="progressBar" style="width:0%"></div></div>
+
+                    <div id="quizContainer"></div>
+                    <div class="result-box" id="resultBox">
+                        <h3>Ваш уровень:</h3>
+                        <div class="result-level" id="resultLevel"></div>
+                        <p id="resultDesc" style="margin:20px 0;"></p>
+                        <p style="color:var(--success); margin:15px 0;">🎁 Пособие «Essential Phrases A2-B2» доступно для скачивания!</p>
+                        <button class="btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Записаться на занятия</button>
+                    </div>
+                    <div class="nav-btns" id="navBtns">
+                        <button class="btn btn-outline" id="prevBtn" style="display:none;" onclick="prevQuestion()">← Назад</button>
+                        <button class="btn" id="nextBtn" onclick="nextQuestion()">Далее →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Materials -->
+    <section id="materials">
+        <div class="container">
+            <h2 style="text-align:center; margin-bottom:40px; font-size:2rem;">🎁 Бесплатные пособия</h2>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:25px;">
+                <div class="card material-card" id="material1">
+                    <div class="material-icon">📘</div>
+                    <h3>Essential Phrases A2-B2</h3>
+                    <p>Ключевые фразы для уверенного общения</p>
+                    <div class="lock-overlay" id="lock1">🔒 Доступ после теста</div>
+                    <a href="#" class="btn hidden" id="download1" style="margin-top:15px;" onclick="downloadMaterial(1)">Скачать PDF</a>
+                </div>
+                <div class="card material-card" id="material2">
+                    <div class="material-icon">📙</div>
+                    <h3>Business Communication Guide</h3>
+                    <p>Английский для деловых встреч и конференций</p>
+                    <div class="lock-overlay" id="lock2">🔒 Доступ после записи</div>
+                    <a href="#" class="btn hidden" id="download2" style="margin-top:15px;" onclick="downloadMaterial(2)">Скачать PDF</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+        <div class="container">
+            <div class="card" style="max-width:600px; margin:0 auto;">
+                <h2 style="text-align:center; font-size:2rem;">📩 Запись на занятия</h2>
+                <p style="text-align:center; color:var(--text-muted); margin-bottom:25px;">Заполните форму, и я свяжусь с вами</p>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label>ФИО</label>
+                        <input type="text" id="name" placeholder="Иванов Иван Иванович" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Уровень языка</label>
+                        <select id="level" required>
+                            <option value="">Выберите уровень</option>
+                            <option value="A2">A2 (Elementary)</option>
+                            <option value="B1">B1 (Intermediate)</option>
+                            <option value="B2">B2 (Upper-Intermediate)</option>
+                            <option value="unknown">Не знаю / После теста</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Предпочитаемое время</label>
+                        <select id="time" required>
+                            <option value="">Выберите время</option>
+                            <option value="morning">Утро (8:00–12:00)</option>
+                            <option value="afternoon">День (12:00–17:00)</option>
+                            <option value="evening">Вечер (17:00–21:00)</option>
+                            <option value="weekend">Выходные</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Контакт для связи</label>
+                        <input type="text" id="contactInfo" placeholder="Telegram, почта или телефон" required>
+                    </div>
+                    <button type="submit" class="btn" style="width:100%; margin-top:10px;">Отправить заявку</button>
+                </form>
+                <p id="formSuccess" style="text-align:center; color:var(--success); margin-top:15px; display:none;">✅ Заявка отправлена! Я свяжусь с вами в ближайшее время.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Модальное окно -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h3 id="modalTitle">Успешно!</h3>
+            <p id="modalText"></p>
+            <button class="btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>© English with Natalia • ИП УНП 491507999 • Все права защищены</p>
+    </footer>
+
+    <script>
+        // ==================== ТЕСТ CEFR ====================
+        const questions = [
+            // Уровень A1-A2 (вопросы 1-7)
+            { q: "She ___ a teacher.", opts: ["am", "is", "are", "be"], correct: 1, cefr: "A1" },
+            { q: "___ you like coffee?", opts: ["Does", "Do", "Is", "Are"], correct: 1, cefr: "A1" },
+            { q: "There ___ many students in the class.", opts: ["is", "am", "are", "be"], correct: 2, cefr: "A1" },
+            { q: "I ___ to the store yesterday.", opts: ["go", "went", "gone", "going"], correct: 1, cefr: "A2" },
+            { q: "She has ___ finished her homework.", opts: ["yet", "already", "still", "never"], correct: 1, cefr: "A2" },
+            { q: "This is the ___ movie I've ever seen.", opts: ["good", "better", "best", "well"], correct: 2, cefr: "A2" },
+            { q: "I don't have ___ money.", opts: ["some", "any", "no", "many"], correct: 1, cefr: "A2" },
+            // Уровень B1 (вопросы 8-14)
+            { q: "He asked me if I ___ help him.", opts: ["can", "could", "will", "would"], correct: 1, cefr: "B1" },
+            { q: "I'd rather ___ at home tonight.", opts: ["staying", "to stay", "stay", "stayed"], correct: 2, cefr: "B1" },
+            { q: "Despite ___ hard, he failed the exam.", opts: ["study", "studying", "studied", "to study"], correct: 1, cefr: "B1" },
+            { q: "She suggested that we ___ early.", opts: ["leave", "left", "leaving", "to leave"], correct: 0, cefr: "B1" },
+            { q: "I wish I ___ more time to travel.", opts: ["have", "had", "will have", "having"], correct: 1, cefr: "B1" },
+            { q: "It's time you ___ a decision.", opts: ["make", "made", "making", "to make"], correct: 1, cefr: "B1" },
+            { q: "Not only ___ late, but he also forgot the documents.", opts: ["he was", "was he", "he is", "is he"], correct: 1, cefr: "B1" },
+            // Уровень B2 (вопросы 15-20)
+            { q: "Had I known about the meeting, I ___ attended.", opts: ["will have", "would have", "had", "would"], correct: 1, cefr: "B2" },
+            { q: "The project, ___ was launched last month, is already successful.", opts: ["that", "which", "what", "who"], correct: 1, cefr: "B2" },
+            { q: "Seldom ___ such a talented musician.", opts: ["I have seen", "have I seen", "I saw", "I see"], correct: 1, cefr: "B2" },
+            { q: "She insisted on ___ to the manager.", opts: ["speak", "speaking", "spoke", "to speak"], correct: 1, cefr: "B2" },
+            { q: "Were it not for his help, I ___ the deadline.", opts: ["would miss", "missed", "would have missed", "had missed"], correct: 2, cefr: "B2" },
+            { q: "It is essential that every student ___ the guidelines.", opts: ["follows", "follow", "followed", "following"], correct: 1, cefr: "B2" }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let testFinished = false;
+
+        function renderQuestion() {
+            const container = document.getElementById('quizContainer');
+            const q = questions[currentQuestion];
+            container.innerHTML = `
+                <div class="question-block active">
+                    <p class="question-text">${currentQuestion + 1}. ${q.q}</p>
+                    <div class="options">
+                        ${q.opts.map((opt, i) => `
+                            <button class="option-btn ${userAnswers[currentQuestion] === i ? 'selected' : ''}"
+                                    onclick="selectAnswer(${i}, this)">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            updateNav();
+            updateProgress();
+        }
+
+        function selectAnswer(index, btn) {
+            if (testFinished) return;
+            userAnswers[currentQuestion] = index;
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === null) {
+                showModal('Внимание', 'Пожалуйста, выберите ответ.');
+                return;
+            }
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                finishTest();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function updateNav() {
+            document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+            document.getElementById('nextBtn').textContent =
+                currentQuestion === questions.length - 1 ? 'Завершить тест' : 'Далее →';
+        }
+
+        function updateProgress() {
+            const pct = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+        }
+
+        function finishTest() {
+            testFinished = true;
+            let score = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans === questions[i].correct) score++;
+            });
+
+            // Определение уровня CEFR
+            let level, desc;
+            const pct = (score / questions.length) * 100;
+            if (score <= 5) {
+                level = 'A1 (Beginner)';
+                desc = 'Базовый уровень. Вы можете использовать простые фразы. Рекомендую курс с A2.';
+            } else if (score <= 10) {
+                level = 'A2 (Elementary)';
+                desc = 'Вы понимаете простые предложения. Готовы переходить к более сложным темам!';
+            } else if (score <= 15) {
+                level = 'B1 (Intermediate)';
+                desc = 'Средний уровень. Вы можете поддержать беседу на знакомые темы. Отличная база для развития!';
+            } else if (score <= 18) {
+                level = 'B2 (Upper-Intermediate)';
+                desc = 'Уверенный уровень! Вы понимаете сложные тексты и можете общаться свободно.';
+            } else {
+                level = 'C1 (Advanced)';
+                desc = 'Продвинутый уровень! Вы владеете языком на высоком уровне.';
+            }
+
+            document.getElementById('resultLevel').textContent = level;
+            document.getElementById('resultDesc').textContent = desc;
+            document.getElementById('resultBox').classList.add('show');
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('navBtns').style.display = 'none';
+            document.getElementById('progressBar').style.width = '100%';
+
+            // Открыть доступ к материалу 1
+            unlockMaterial(1);
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            testFinished = false;
+            document.getElementById('resultBox').classList.remove('show');
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('navBtns').style.display = 'flex';
+            document.getElementById('progressBar').style.width = '0%';
+            renderQuestion();
+        }
+
+        // ==================== МАТЕРИАЛЫ ====================
+        let testCompleted = localStorage.getItem('testCompleted') === 'true';
+        let formSubmitted = localStorage.getItem('formSubmitted') === 'true';
+
+        function unlockMaterial(num) {
+            if (num === 1) {
+                localStorage.setItem('testCompleted', 'true');
+                testCompleted = true;
+                document.getElementById('lock1').classList.add('hidden');
+                document.getElementById('download1').classList.remove('hidden');
+                document.getElementById('material1').classList.remove('locked');
+            }
+            if (num === 2) {
+                localStorage.setItem('formSubmitted', 'true');
+                formSubmitted = true;
+                document.getElementById('lock2').classList.add('hidden');
+                document.getElementById('download2').classList.remove('hidden');
+                document.getElementById('material2').classList.remove('locked');
+            }
+        }
+
+        function updateMaterialsUI() {
+            if (testCompleted) {
+                document.getElementById('lock1').classList.add('hidden');
+                document.getElementById('download1').classList.remove('hidden');
+                document.getElementById('material1').classList.remove('locked');
+            }
+            if (formSubmitted) {
+                document.getElementById('lock2').classList.add('hidden');
+                document.getElementById('download2').classList.remove('hidden');
+                document.getElementById('material2').classList.remove('locked');
+            }
+        }
+
+        function downloadMaterial(num) {
+            // В реальном проекте здесь будут ссылки на PDF файлы
+            const files = {
+                1: 'Essential_Phrases_A2_B2.pdf',
+                2: 'Business_Communication_Guide.pdf'
+            };
+            showModal('📥 Скачивание',
+                `Файл «${files[num]}» будет загружен. (Демо-версия — PDF появится после загрузки на сервер)`
+            );
+            // Для реального использования:
+            // window.open('files/' + files[num], '_blank');
+        }
+
+        // ==================== ФОРМА ЗАПИСИ ====================
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const level = document.getElementById('level').value;
+            const time = document.getElementById('time').value;
+            const contactInfo = document.getElementById('contactInfo').value;
+
+            // Сохраняем данные (в реальном проекте — отправка на сервер)
+            const application = { name, level, time, contactInfo, date: new Date().toISOString() };
+            const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+            applications.push(application);
+            localStorage.setItem('applications', JSON.stringify(applications));
+
+            // Показываем успех
+            document.getElementById('formSuccess').style.display = 'block';
+            document.getElementById('contactForm').reset();
+
+            // Открываем доступ к материалу 2
+            unlockMaterial(2);
+
+            // В реальном проекте — отправка на почту или в Telegram
+            console.log('Новая заявка:', application);
+
+            setTimeout(() => {
+                document.getElementById('formSuccess').style.display = 'none';
+            }, 5000);
+        });
+
+        // ==================== МОДАЛЬНОЕ ОКНО ====================
+        function showModal(title, text) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalText').textContent = text;
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+        document.getElementById('prevBtn').style.display = 'none';
+        updateMaterialsUI();
+        renderQuestion();
+
+        // Плавный скролл
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        console.log('🌟 English with Natalia — сайт готов!');
+        console.log('📝 Тест CEFR:', questions.length, 'вопросов');
+        console.log('📊 Заявки в localStorage:', 'applications');
+    </script>
+</body>
+</html>
