@@ -659,12 +659,11 @@
         <p>© English with Natalia • ИП УНП 491507999 • Все права защищены</p>
     </footer>
 
-    <script>
+   <script>
     // ==================== НАСТРОЙКИ TELEGRAM ====================
     const TELEGRAM_BOT_TOKEN = '8615050552:AAEDwRuPLEztcE4-W7qTe8iMpJzDrxWZ_pU';
     const TELEGRAM_CHAT_ID = '756856273';
 
-    // Функция отправки в Telegram
     async function sendToTelegram(message) {
         const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
         try {
@@ -687,7 +686,6 @@
 
     // ==================== ТЕСТ CEFR ====================
     const questions = [
-        // Уровень A1-A2 (вопросы 1-7)
         { q: "She ___ a teacher.", opts: ["am", "is", "are", "be"], correct: 1, cefr: "A1" },
         { q: "___ you like coffee?", opts: ["Does", "Do", "Is", "Are"], correct: 1, cefr: "A1" },
         { q: "There ___ many students in the class.", opts: ["is", "am", "are", "be"], correct: 2, cefr: "A1" },
@@ -695,7 +693,6 @@
         { q: "She has ___ finished her homework.", opts: ["yet", "already", "still", "never"], correct: 1, cefr: "A2" },
         { q: "This is the ___ movie I've ever seen.", opts: ["good", "better", "best", "well"], correct: 2, cefr: "A2" },
         { q: "I don't have ___ money.", opts: ["some", "any", "no", "many"], correct: 1, cefr: "A2" },
-        // Уровень B1 (вопросы 8-14)
         { q: "He asked me if I ___ help him.", opts: ["can", "could", "will", "would"], correct: 1, cefr: "B1" },
         { q: "I'd rather ___ at home tonight.", opts: ["staying", "to stay", "stay", "stayed"], correct: 2, cefr: "B1" },
         { q: "Despite ___ hard, he failed the exam.", opts: ["study", "studying", "studied", "to study"], correct: 1, cefr: "B1" },
@@ -703,7 +700,6 @@
         { q: "I wish I ___ more time to travel.", opts: ["have", "had", "will have", "having"], correct: 1, cefr: "B1" },
         { q: "It's time you ___ a decision.", opts: ["make", "made", "making", "to make"], correct: 1, cefr: "B1" },
         { q: "Not only ___ late, but he also forgot the documents.", opts: ["he was", "was he", "he is", "is he"], correct: 1, cefr: "B1" },
-        // Уровень B2 (вопросы 15-20)
         { q: "Had I known about the meeting, I ___ attended.", opts: ["will have", "would have", "had", "would"], correct: 1, cefr: "B2" },
         { q: "The project, ___ was launched last month, is already successful.", opts: ["that", "which", "what", "who"], correct: 1, cefr: "B2" },
         { q: "Seldom ___ such a talented musician.", opts: ["I have seen", "have I seen", "I saw", "I see"], correct: 1, cefr: "B2" },
@@ -781,9 +777,7 @@
             if (ans === questions[i].correct) score++;
         });
 
-        // Определение уровня CEFR
         let level, desc;
-        const pct = (score / questions.length) * 100;
         if (score <= 5) {
             level = 'A1 (Beginner)';
             desc = 'Базовый уровень. Вы можете использовать простые фразы. Рекомендую курс с A2.';
@@ -808,19 +802,7 @@
         document.getElementById('navBtns').style.display = 'none';
         document.getElementById('progressBar').style.width = '100%';
 
-        // Открыть доступ к материалу 1
         unlockMaterial(1);
-    }
-
-    function restartTest() {
-        currentQuestion = 0;
-        userAnswers = new Array(questions.length).fill(null);
-        testFinished = false;
-        document.getElementById('resultBox').classList.remove('show');
-        document.getElementById('quizContainer').style.display = 'block';
-        document.getElementById('navBtns').style.display = 'flex';
-        document.getElementById('progressBar').style.width = '0%';
-        renderQuestion();
     }
 
     // ==================== МАТЕРИАЛЫ ====================
@@ -858,19 +840,33 @@
     }
 
     function downloadMaterial(num) {
-        // В реальном проекте здесь будут ссылки на PDF файлы
-      const files = {
-    1: 'files/Essential_Phrases_A2_B2.pdf',
-    2: 'files/Business_Communication_Guide.pdf'
-};
-        showModal('📥 Скачивание',
-            `Файл «${files[num]}» будет загружен. (Демо-версия — PDF появится после загрузки на сервер)`
-        );
-        // Для реального использования:
-        // window.open('files/' + files[num], '_blank');
+        const files = {
+            1: 'files/Essential_Phrases_A2_B2.pdf',
+            2: 'files/Business_Communication_Guide.pdf'
+        };
+
+        const filePath = files[num];
+        const fileName = filePath.split('/').pop();
+
+        // Пробуем скачать
+        const link = document.createElement('a');
+        link.href = filePath;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Если файл не скачался (ошибка 404) — покажем сообщение
+        setTimeout(() => {
+            showModal('📥 Файл не найден',
+                `Файл «${fileName}» ещё не загружен на сервер.\n\nЗагрузите PDF в папку files/ на GitHub.`
+            );
+        }, 500);
+
+        sendToTelegram(`📥 <b>Скачивание материала!</b>\n\n📄 Файл: ${fileName}\n🕐 ${new Date().toLocaleString('ru-RU')}`);
     }
 
-    // ==================== ФОРМА ЗАПИСИ С ОТПРАВКОЙ В TELEGRAM ====================
+    // ==================== ФОРМА ЗАПИСИ ====================
     document.getElementById('contactForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -879,7 +875,6 @@
         const time = document.getElementById('time').value;
         const contactInfo = document.getElementById('contactInfo').value.trim();
         
-        // Форматируем время для читаемости
         const timeLabels = {
             'morning': '🌅 Утро (8:00–12:00)',
             'afternoon': '☀️ День (12:00–17:00)',
@@ -894,7 +889,6 @@
             'unknown': 'Не знаю / После теста'
         };
 
-        // Формируем красивое сообщение для Telegram
         const message = `
 <b>📩 Новая заявка с сайта!</b>
 
@@ -906,24 +900,19 @@
 🕐 <i>${new Date().toLocaleString('ru-RU')}</i>
         `.trim();
 
-        // Отправляем в Telegram
         const sent = await sendToTelegram(message);
         
         if (sent) {
-            // Сохраняем локально (резерв)
             const application = { name, level, time, contactInfo, date: new Date().toISOString() };
             const applications = JSON.parse(localStorage.getItem('applications') || '[]');
             applications.push(application);
             localStorage.setItem('applications', JSON.stringify(applications));
             
-            // Показываем успех
             document.getElementById('formSuccess').style.display = 'block';
             document.getElementById('contactForm').reset();
             
-            // Открываем доступ к материалу 2
             unlockMaterial(2);
             
-            // Скрываем сообщение через 5 секунд
             setTimeout(() => {
                 document.getElementById('formSuccess').style.display = 'none';
             }, 5000);
@@ -947,7 +936,6 @@
         if (e.target === this) closeModal();
     });
 
-    // Закрытие по Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeModal();
     });
@@ -957,7 +945,6 @@
     updateMaterialsUI();
     renderQuestion();
 
-    // Плавный скролл
     document.querySelectorAll('a[href^="#"]').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -967,9 +954,6 @@
     });
 
     console.log('🌟 English with Natalia — сайт готов!');
-    console.log('📝 Тест CEFR:', questions.length, 'вопросов');
-    console.log('📨 Заявки отправляются в Telegram');
-    console.log('💾 Резервное сохранение в localStorage');
-    </script>
+</script>
 </body>
 </html>
