@@ -660,252 +660,316 @@
     </footer>
 
     <script>
-        // ==================== ТЕСТ CEFR ====================
-        const questions = [
-            // Уровень A1-A2 (вопросы 1-7)
-            { q: "She ___ a teacher.", opts: ["am", "is", "are", "be"], correct: 1, cefr: "A1" },
-            { q: "___ you like coffee?", opts: ["Does", "Do", "Is", "Are"], correct: 1, cefr: "A1" },
-            { q: "There ___ many students in the class.", opts: ["is", "am", "are", "be"], correct: 2, cefr: "A1" },
-            { q: "I ___ to the store yesterday.", opts: ["go", "went", "gone", "going"], correct: 1, cefr: "A2" },
-            { q: "She has ___ finished her homework.", opts: ["yet", "already", "still", "never"], correct: 1, cefr: "A2" },
-            { q: "This is the ___ movie I've ever seen.", opts: ["good", "better", "best", "well"], correct: 2, cefr: "A2" },
-            { q: "I don't have ___ money.", opts: ["some", "any", "no", "many"], correct: 1, cefr: "A2" },
-            // Уровень B1 (вопросы 8-14)
-            { q: "He asked me if I ___ help him.", opts: ["can", "could", "will", "would"], correct: 1, cefr: "B1" },
-            { q: "I'd rather ___ at home tonight.", opts: ["staying", "to stay", "stay", "stayed"], correct: 2, cefr: "B1" },
-            { q: "Despite ___ hard, he failed the exam.", opts: ["study", "studying", "studied", "to study"], correct: 1, cefr: "B1" },
-            { q: "She suggested that we ___ early.", opts: ["leave", "left", "leaving", "to leave"], correct: 0, cefr: "B1" },
-            { q: "I wish I ___ more time to travel.", opts: ["have", "had", "will have", "having"], correct: 1, cefr: "B1" },
-            { q: "It's time you ___ a decision.", opts: ["make", "made", "making", "to make"], correct: 1, cefr: "B1" },
-            { q: "Not only ___ late, but he also forgot the documents.", opts: ["he was", "was he", "he is", "is he"], correct: 1, cefr: "B1" },
-            // Уровень B2 (вопросы 15-20)
-            { q: "Had I known about the meeting, I ___ attended.", opts: ["will have", "would have", "had", "would"], correct: 1, cefr: "B2" },
-            { q: "The project, ___ was launched last month, is already successful.", opts: ["that", "which", "what", "who"], correct: 1, cefr: "B2" },
-            { q: "Seldom ___ such a talented musician.", opts: ["I have seen", "have I seen", "I saw", "I see"], correct: 1, cefr: "B2" },
-            { q: "She insisted on ___ to the manager.", opts: ["speak", "speaking", "spoke", "to speak"], correct: 1, cefr: "B2" },
-            { q: "Were it not for his help, I ___ the deadline.", opts: ["would miss", "missed", "would have missed", "had missed"], correct: 2, cefr: "B2" },
-            { q: "It is essential that every student ___ the guidelines.", opts: ["follows", "follow", "followed", "following"], correct: 1, cefr: "B2" }
-        ];
+    // ==================== НАСТРОЙКИ TELEGRAM ====================
+    const TELEGRAM_BOT_TOKEN = '8615050552:AAEDwRuPLEztcE4-W7qTe8iMpJzDrxWZ_pU';
+    const TELEGRAM_CHAT_ID = '756856273';
 
-        let currentQuestion = 0;
-        let userAnswers = new Array(questions.length).fill(null);
-        let testFinished = false;
-
-        function renderQuestion() {
-            const container = document.getElementById('quizContainer');
-            const q = questions[currentQuestion];
-            container.innerHTML = `
-                <div class="question-block active">
-                    <p class="question-text">${currentQuestion + 1}. ${q.q}</p>
-                    <div class="options">
-                        ${q.opts.map((opt, i) => `
-                            <button class="option-btn ${userAnswers[currentQuestion] === i ? 'selected' : ''}"
-                                    onclick="selectAnswer(${i}, this)">
-                                ${opt}
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-            updateNav();
-            updateProgress();
-        }
-
-        function selectAnswer(index, btn) {
-            if (testFinished) return;
-            userAnswers[currentQuestion] = index;
-            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        }
-
-        function nextQuestion() {
-            if (userAnswers[currentQuestion] === null) {
-                showModal('Внимание', 'Пожалуйста, выберите ответ.');
-                return;
-            }
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                renderQuestion();
-            } else {
-                finishTest();
-            }
-        }
-
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                renderQuestion();
-            }
-        }
-
-        function updateNav() {
-            document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
-            document.getElementById('nextBtn').textContent =
-                currentQuestion === questions.length - 1 ? 'Завершить тест' : 'Далее →';
-        }
-
-        function updateProgress() {
-            const pct = ((currentQuestion) / questions.length) * 100;
-            document.getElementById('progressBar').style.width = pct + '%';
-        }
-
-        function finishTest() {
-            testFinished = true;
-            let score = 0;
-            userAnswers.forEach((ans, i) => {
-                if (ans === questions[i].correct) score++;
+    // Функция отправки в Telegram
+    async function sendToTelegram(message) {
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'HTML'
+                })
             });
-
-            // Определение уровня CEFR
-            let level, desc;
-            const pct = (score / questions.length) * 100;
-            if (score <= 5) {
-                level = 'A1 (Beginner)';
-                desc = 'Базовый уровень. Вы можете использовать простые фразы. Рекомендую курс с A2.';
-            } else if (score <= 10) {
-                level = 'A2 (Elementary)';
-                desc = 'Вы понимаете простые предложения. Готовы переходить к более сложным темам!';
-            } else if (score <= 15) {
-                level = 'B1 (Intermediate)';
-                desc = 'Средний уровень. Вы можете поддержать беседу на знакомые темы. Отличная база для развития!';
-            } else if (score <= 18) {
-                level = 'B2 (Upper-Intermediate)';
-                desc = 'Уверенный уровень! Вы понимаете сложные тексты и можете общаться свободно.';
-            } else {
-                level = 'C1 (Advanced)';
-                desc = 'Продвинутый уровень! Вы владеете языком на высоком уровне.';
-            }
-
-            document.getElementById('resultLevel').textContent = level;
-            document.getElementById('resultDesc').textContent = desc;
-            document.getElementById('resultBox').classList.add('show');
-            document.getElementById('quizContainer').style.display = 'none';
-            document.getElementById('navBtns').style.display = 'none';
-            document.getElementById('progressBar').style.width = '100%';
-
-            // Открыть доступ к материалу 1
-            unlockMaterial(1);
+            const data = await response.json();
+            return data.ok;
+        } catch (error) {
+            console.error('Ошибка отправки в Telegram:', error);
+            return false;
         }
+    }
 
-        function restartTest() {
-            currentQuestion = 0;
-            userAnswers = new Array(questions.length).fill(null);
-            testFinished = false;
-            document.getElementById('resultBox').classList.remove('show');
-            document.getElementById('quizContainer').style.display = 'block';
-            document.getElementById('navBtns').style.display = 'flex';
-            document.getElementById('progressBar').style.width = '0%';
+    // ==================== ТЕСТ CEFR ====================
+    const questions = [
+        // Уровень A1-A2 (вопросы 1-7)
+        { q: "She ___ a teacher.", opts: ["am", "is", "are", "be"], correct: 1, cefr: "A1" },
+        { q: "___ you like coffee?", opts: ["Does", "Do", "Is", "Are"], correct: 1, cefr: "A1" },
+        { q: "There ___ many students in the class.", opts: ["is", "am", "are", "be"], correct: 2, cefr: "A1" },
+        { q: "I ___ to the store yesterday.", opts: ["go", "went", "gone", "going"], correct: 1, cefr: "A2" },
+        { q: "She has ___ finished her homework.", opts: ["yet", "already", "still", "never"], correct: 1, cefr: "A2" },
+        { q: "This is the ___ movie I've ever seen.", opts: ["good", "better", "best", "well"], correct: 2, cefr: "A2" },
+        { q: "I don't have ___ money.", opts: ["some", "any", "no", "many"], correct: 1, cefr: "A2" },
+        // Уровень B1 (вопросы 8-14)
+        { q: "He asked me if I ___ help him.", opts: ["can", "could", "will", "would"], correct: 1, cefr: "B1" },
+        { q: "I'd rather ___ at home tonight.", opts: ["staying", "to stay", "stay", "stayed"], correct: 2, cefr: "B1" },
+        { q: "Despite ___ hard, he failed the exam.", opts: ["study", "studying", "studied", "to study"], correct: 1, cefr: "B1" },
+        { q: "She suggested that we ___ early.", opts: ["leave", "left", "leaving", "to leave"], correct: 0, cefr: "B1" },
+        { q: "I wish I ___ more time to travel.", opts: ["have", "had", "will have", "having"], correct: 1, cefr: "B1" },
+        { q: "It's time you ___ a decision.", opts: ["make", "made", "making", "to make"], correct: 1, cefr: "B1" },
+        { q: "Not only ___ late, but he also forgot the documents.", opts: ["he was", "was he", "he is", "is he"], correct: 1, cefr: "B1" },
+        // Уровень B2 (вопросы 15-20)
+        { q: "Had I known about the meeting, I ___ attended.", opts: ["will have", "would have", "had", "would"], correct: 1, cefr: "B2" },
+        { q: "The project, ___ was launched last month, is already successful.", opts: ["that", "which", "what", "who"], correct: 1, cefr: "B2" },
+        { q: "Seldom ___ such a talented musician.", opts: ["I have seen", "have I seen", "I saw", "I see"], correct: 1, cefr: "B2" },
+        { q: "She insisted on ___ to the manager.", opts: ["speak", "speaking", "spoke", "to speak"], correct: 1, cefr: "B2" },
+        { q: "Were it not for his help, I ___ the deadline.", opts: ["would miss", "missed", "would have missed", "had missed"], correct: 2, cefr: "B2" },
+        { q: "It is essential that every student ___ the guidelines.", opts: ["follows", "follow", "followed", "following"], correct: 1, cefr: "B2" }
+    ];
+
+    let currentQuestion = 0;
+    let userAnswers = new Array(questions.length).fill(null);
+    let testFinished = false;
+
+    function renderQuestion() {
+        const container = document.getElementById('quizContainer');
+        const q = questions[currentQuestion];
+        container.innerHTML = `
+            <div class="question-block active">
+                <p class="question-text">${currentQuestion + 1}. ${q.q}</p>
+                <div class="options">
+                    ${q.opts.map((opt, i) => `
+                        <button class="option-btn ${userAnswers[currentQuestion] === i ? 'selected' : ''}"
+                                onclick="selectAnswer(${i}, this)">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        updateNav();
+        updateProgress();
+    }
+
+    function selectAnswer(index, btn) {
+        if (testFinished) return;
+        userAnswers[currentQuestion] = index;
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function nextQuestion() {
+        if (userAnswers[currentQuestion] === null) {
+            showModal('Внимание', 'Пожалуйста, выберите ответ.');
+            return;
+        }
+        if (currentQuestion < questions.length - 1) {
+            currentQuestion++;
+            renderQuestion();
+        } else {
+            finishTest();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestion > 0) {
+            currentQuestion--;
             renderQuestion();
         }
+    }
 
-        // ==================== МАТЕРИАЛЫ ====================
-        let testCompleted = localStorage.getItem('testCompleted') === 'true';
-        let formSubmitted = localStorage.getItem('formSubmitted') === 'true';
+    function updateNav() {
+        document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+        document.getElementById('nextBtn').textContent =
+            currentQuestion === questions.length - 1 ? 'Завершить тест' : 'Далее →';
+    }
 
-        function unlockMaterial(num) {
-            if (num === 1) {
-                localStorage.setItem('testCompleted', 'true');
-                testCompleted = true;
-                document.getElementById('lock1').classList.add('hidden');
-                document.getElementById('download1').classList.remove('hidden');
-                document.getElementById('material1').classList.remove('locked');
-            }
-            if (num === 2) {
-                localStorage.setItem('formSubmitted', 'true');
-                formSubmitted = true;
-                document.getElementById('lock2').classList.add('hidden');
-                document.getElementById('download2').classList.remove('hidden');
-                document.getElementById('material2').classList.remove('locked');
-            }
+    function updateProgress() {
+        const pct = ((currentQuestion) / questions.length) * 100;
+        document.getElementById('progressBar').style.width = pct + '%';
+    }
+
+    function finishTest() {
+        testFinished = true;
+        let score = 0;
+        userAnswers.forEach((ans, i) => {
+            if (ans === questions[i].correct) score++;
+        });
+
+        // Определение уровня CEFR
+        let level, desc;
+        const pct = (score / questions.length) * 100;
+        if (score <= 5) {
+            level = 'A1 (Beginner)';
+            desc = 'Базовый уровень. Вы можете использовать простые фразы. Рекомендую курс с A2.';
+        } else if (score <= 10) {
+            level = 'A2 (Elementary)';
+            desc = 'Вы понимаете простые предложения. Готовы переходить к более сложным темам!';
+        } else if (score <= 15) {
+            level = 'B1 (Intermediate)';
+            desc = 'Средний уровень. Вы можете поддержать беседу на знакомые темы. Отличная база для развития!';
+        } else if (score <= 18) {
+            level = 'B2 (Upper-Intermediate)';
+            desc = 'Уверенный уровень! Вы понимаете сложные тексты и можете общаться свободно.';
+        } else {
+            level = 'C1 (Advanced)';
+            desc = 'Продвинутый уровень! Вы владеете языком на высоком уровне.';
         }
 
-        function updateMaterialsUI() {
-            if (testCompleted) {
-                document.getElementById('lock1').classList.add('hidden');
-                document.getElementById('download1').classList.remove('hidden');
-                document.getElementById('material1').classList.remove('locked');
-            }
-            if (formSubmitted) {
-                document.getElementById('lock2').classList.add('hidden');
-                document.getElementById('download2').classList.remove('hidden');
-                document.getElementById('material2').classList.remove('locked');
-            }
+        document.getElementById('resultLevel').textContent = level;
+        document.getElementById('resultDesc').textContent = desc;
+        document.getElementById('resultBox').classList.add('show');
+        document.getElementById('quizContainer').style.display = 'none';
+        document.getElementById('navBtns').style.display = 'none';
+        document.getElementById('progressBar').style.width = '100%';
+
+        // Открыть доступ к материалу 1
+        unlockMaterial(1);
+    }
+
+    function restartTest() {
+        currentQuestion = 0;
+        userAnswers = new Array(questions.length).fill(null);
+        testFinished = false;
+        document.getElementById('resultBox').classList.remove('show');
+        document.getElementById('quizContainer').style.display = 'block';
+        document.getElementById('navBtns').style.display = 'flex';
+        document.getElementById('progressBar').style.width = '0%';
+        renderQuestion();
+    }
+
+    // ==================== МАТЕРИАЛЫ ====================
+    let testCompleted = localStorage.getItem('testCompleted') === 'true';
+    let formSubmitted = localStorage.getItem('formSubmitted') === 'true';
+
+    function unlockMaterial(num) {
+        if (num === 1) {
+            localStorage.setItem('testCompleted', 'true');
+            testCompleted = true;
+            document.getElementById('lock1').classList.add('hidden');
+            document.getElementById('download1').classList.remove('hidden');
+            document.getElementById('material1').classList.remove('locked');
         }
-
-        function downloadMaterial(num) {
-            // В реальном проекте здесь будут ссылки на PDF файлы
-            const files = {
-                1: 'Essential_Phrases_A2_B2.pdf',
-                2: 'Business_Communication_Guide.pdf'
-            };
-            showModal('📥 Скачивание',
-                `Файл «${files[num]}» будет загружен. (Демо-версия — PDF появится после загрузки на сервер)`
-            );
-            // Для реального использования:
-            // window.open('files/' + files[num], '_blank');
+        if (num === 2) {
+            localStorage.setItem('formSubmitted', 'true');
+            formSubmitted = true;
+            document.getElementById('lock2').classList.add('hidden');
+            document.getElementById('download2').classList.remove('hidden');
+            document.getElementById('material2').classList.remove('locked');
         }
+    }
 
-        // ==================== ФОРМА ЗАПИСИ ====================
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const level = document.getElementById('level').value;
-            const time = document.getElementById('time').value;
-            const contactInfo = document.getElementById('contactInfo').value;
+    function updateMaterialsUI() {
+        if (testCompleted) {
+            document.getElementById('lock1').classList.add('hidden');
+            document.getElementById('download1').classList.remove('hidden');
+            document.getElementById('material1').classList.remove('locked');
+        }
+        if (formSubmitted) {
+            document.getElementById('lock2').classList.add('hidden');
+            document.getElementById('download2').classList.remove('hidden');
+            document.getElementById('material2').classList.remove('locked');
+        }
+    }
 
-            // Сохраняем данные (в реальном проекте — отправка на сервер)
+    function downloadMaterial(num) {
+        // В реальном проекте здесь будут ссылки на PDF файлы
+        const files = {
+            1: 'Essential_Phrases_A2_B2.pdf',
+            2: 'Business_Communication_Guide.pdf'
+        };
+        showModal('📥 Скачивание',
+            `Файл «${files[num]}» будет загружен. (Демо-версия — PDF появится после загрузки на сервер)`
+        );
+        // Для реального использования:
+        // window.open('files/' + files[num], '_blank');
+    }
+
+    // ==================== ФОРМА ЗАПИСИ С ОТПРАВКОЙ В TELEGRAM ====================
+    document.getElementById('contactForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value.trim();
+        const level = document.getElementById('level').value;
+        const time = document.getElementById('time').value;
+        const contactInfo = document.getElementById('contactInfo').value.trim();
+        
+        // Форматируем время для читаемости
+        const timeLabels = {
+            'morning': '🌅 Утро (8:00–12:00)',
+            'afternoon': '☀️ День (12:00–17:00)',
+            'evening': '🌙 Вечер (17:00–21:00)',
+            'weekend': '📅 Выходные'
+        };
+        
+        const levelLabels = {
+            'A2': 'A2 (Elementary)',
+            'B1': 'B1 (Intermediate)', 
+            'B2': 'B2 (Upper-Intermediate)',
+            'unknown': 'Не знаю / После теста'
+        };
+
+        // Формируем красивое сообщение для Telegram
+        const message = `
+<b>📩 Новая заявка с сайта!</b>
+
+👤 <b>ФИО:</b> ${name}
+📊 <b>Уровень:</b> ${levelLabels[level] || level}
+⏰ <b>Время:</b> ${timeLabels[time] || time}
+📱 <b>Контакты:</b> ${contactInfo}
+
+🕐 <i>${new Date().toLocaleString('ru-RU')}</i>
+        `.trim();
+
+        // Отправляем в Telegram
+        const sent = await sendToTelegram(message);
+        
+        if (sent) {
+            // Сохраняем локально (резерв)
             const application = { name, level, time, contactInfo, date: new Date().toISOString() };
             const applications = JSON.parse(localStorage.getItem('applications') || '[]');
             applications.push(application);
             localStorage.setItem('applications', JSON.stringify(applications));
-
+            
             // Показываем успех
             document.getElementById('formSuccess').style.display = 'block';
             document.getElementById('contactForm').reset();
-
+            
             // Открываем доступ к материалу 2
             unlockMaterial(2);
-
-            // В реальном проекте — отправка на почту или в Telegram
-            console.log('Новая заявка:', application);
-
+            
+            // Скрываем сообщение через 5 секунд
             setTimeout(() => {
                 document.getElementById('formSuccess').style.display = 'none';
             }, 5000);
-        });
-
-        // ==================== МОДАЛЬНОЕ ОКНО ====================
-        function showModal(title, text) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalText').textContent = text;
-            document.getElementById('modalOverlay').classList.add('show');
+        } else {
+            showModal('⚠️ Ошибка', 'Не удалось отправить заявку. Пожалуйста, свяжитесь со мной напрямую через Telegram или почту.');
         }
+    });
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('show');
-        }
+    // ==================== МОДАЛЬНОЕ ОКНО ====================
+    function showModal(title, text) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalText').textContent = text;
+        document.getElementById('modalOverlay').classList.add('show');
+    }
 
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('show');
+    }
+
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+    document.getElementById('prevBtn').style.display = 'none';
+    updateMaterialsUI();
+    renderQuestion();
+
+    // Плавный скролл
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
         });
+    });
 
-        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
-        document.getElementById('prevBtn').style.display = 'none';
-        updateMaterialsUI();
-        renderQuestion();
-
-        // Плавный скролл
-        document.querySelectorAll('a[href^="#"]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth' });
-            });
-        });
-
-        console.log('🌟 English with Natalia — сайт готов!');
-        console.log('📝 Тест CEFR:', questions.length, 'вопросов');
-        console.log('📊 Заявки в localStorage:', 'applications');
+    console.log('🌟 English with Natalia — сайт готов!');
+    console.log('📝 Тест CEFR:', questions.length, 'вопросов');
+    console.log('📨 Заявки отправляются в Telegram');
+    console.log('💾 Резервное сохранение в localStorage');
     </script>
 </body>
 </html>
